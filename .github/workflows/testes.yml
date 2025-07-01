@@ -1,0 +1,23 @@
+name: TDD T2 - ed2025a
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
+    - name: Compila
+      run: make    
+    - name: Update
+      run: sudo apt update
+    - name: Instala valgrind
+      run: sudo apt install -y valgrind
+    - name: Roda testes no valgrind
+      run: valgrind --leak-check=full ./a.out --reporter compact --success
