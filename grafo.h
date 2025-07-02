@@ -34,6 +34,10 @@ typedef struct vertice {
 	int nome;            /* nome/número do vértice */
 	lista_t* adjacentes; /* lista com os vértices adjacentes (vizinhos),
                         * cada elemento é aresta_t */
+
+  /* abaixo são os campos para o algoritmo de Dijkstra */
+  float chave;      /* chave usada para o heap */
+  struct vertice* ant; /* vértice anterior do caminho */
 } vertice_t;
 
 /* o tipo aresta com um ponteiro para o vértice */
@@ -68,7 +72,7 @@ vertice_t* grafo_busca_vertice(grafo_t* g, int nome);
 /* 
  * Retorna o peso total do caminho curto quando existir, 0 caso contrario
 */
-float grafo_caminho_curto(grafo_t* g, vertice_t* u, vertice_t* v)
+float grafo_caminho_curto(grafo_t* g, vertice_t* u, vertice_t* v);
 
 /* Importa um grafo a partir de um arquivo texto */
 void grafo_importa(grafo_t* g, char* arquivo);

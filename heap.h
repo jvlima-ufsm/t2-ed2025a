@@ -56,7 +56,7 @@ void heap_insere( heap_t* h, vertice_t* v );
 /* assumindo que o heap foi violado, reconstroi o heap a partir da posição i */
 void heap_reconstroi ( heap_t* h, int i );
 
-bool heap_vazio( heap_t* h );
+int heap_vazio( heap_t* h );
 
 void heap_destroi( heap_t* h );
 

@@ -64,7 +64,7 @@ void heap_constroi( heap_t* h, lista_t* l )
 {
   lista_t* tmp = l;
   int i;
-  while(lista_vazia(tmp) == false){
+  while(lista_vazia(tmp) == 0){
     vertice_t* v = (vertice_t*)tmp->dado;
     h->A[h->tam] = v;
     h->tam++;
@@ -101,14 +101,14 @@ void heap_reconstroi ( heap_t* h, int i )
   }
 }
 
-bool heap_contido( heap_t* h, vertice_t* v )
+int heap_contido( heap_t* h, vertice_t* v )
 {
   int i;
   for(i= 0; i < h->tam; i++)
     if(h->A[i]->nome == v->nome)
-      return true;
+      return 1;
 
-  return false;
+  return 0;
 }
 
 vertice_t* heap_retira_minimo( heap_t* h ) 

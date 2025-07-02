@@ -31,6 +31,7 @@
 
 #include "grafo.h"
 #include "lista.h"
+#include "heap.h"
 
 
 /* Cria uma árvore geradora mínima com o algoritmo de Prim.
@@ -46,7 +47,7 @@ void grafo_dijkstra(grafo_t* g, vertice_t* fonte)
 
   /* inicializa vértices */
   l = g->vertices;
-  while(lista_vazia(l) == false){
+  while(lista_vazia(l) == 0){
     v = (vertice_t*)l->dado;
     v->ant = NULL;
     v->chave = FLT_MAX;
@@ -85,7 +86,7 @@ vertice_t* grafo_busca_vertice(grafo_t* g, int nome)
   assert(g != 0);
 
   l = g->vertices;
-  while(lista_vazia(l) == false){
+  while(lista_vazia(l) == 0){
     v = (vertice_t*)l->dado;
     if(v->nome == nome)
       return v;
@@ -98,14 +99,14 @@ vertice_t* grafo_busca_vertice(grafo_t* g, int nome)
 
 /* insere um vértice no grafo.
  *  Se vértice existe, retorna false, senão true.  */
-bool grafo_insere_vertice(grafo_t* g, int nome)
+int grafo_insere_vertice(grafo_t* g, int nome)
 {
   vertice_t* v;
   v = grafo_busca_vertice(g, nome);
   if(v != NULL)
-    return false;
+    return 0;
 
-  v = (vertice_t*)memo_aloca(sizeof(vertice_t));
+  v = (vertice_t*)malloc(sizeof(vertice_t));
   v->nome = nome;
   v->adjacentes = lista_cria();
   v->chave = FLT_MAX;
@@ -114,13 +115,13 @@ bool grafo_insere_vertice(grafo_t* g, int nome)
   g->vertices = lista_insere(g->vertices, v);
   g->nvertices++;
 
-  return true;
+  return 1;
 }
 
 /* Insere uma aresta entre os vértices v1 e v2.
  * Se um dos vértices não existe, retorna false.
  * Caso sucesso, retorna true. */
-bool grafo_insere_aresta(grafo_t* g, int nome1, int nome2, float peso)
+int grafo_insere_aresta(grafo_t* g, int nome1, int nome2, float peso)
 {
   vertice_t* v1;
   vertice_t* v2;
@@ -130,21 +131,21 @@ bool grafo_insere_aresta(grafo_t* g, int nome1, int nome2, float peso)
   v1 = grafo_busca_vertice(g, nome1);
   v2 = grafo_busca_vertice(g, nome2);
   if(v1 == NULL || v2 == NULL)
-    return false;
+    return 0;
 
   /* insere v2 no v1 */
-  a1 = (aresta_t*)memo_aloca(sizeof(aresta_t));
+  a1 = (aresta_t*)malloc(sizeof(aresta_t));
   a1->v = v2;
   a1->peso = peso;
   v1->adjacentes = lista_insere(v1->adjacentes, a1);
 
   /* insere v1 no v2 */
-  a2 = (aresta_t*)memo_aloca(sizeof(aresta_t));
+  a2 = (aresta_t*)malloc(sizeof(aresta_t));
   a2->v = v1;
   a2->peso = peso;
   v2->adjacentes = lista_insere(v2->adjacentes, a2);
 
-  return true;
+  return 1;
 }
 
 void grafo_importa(grafo_t* g, char* arquivo)
@@ -163,7 +164,7 @@ void grafo_importa(grafo_t* g, char* arquivo)
     fscanf(f, "%d %d %f", &v1, &v2, &peso);
     grafo_insere_vertice(g, v1);
     grafo_insere_vertice(g, v2);
-    if(grafo_insere_aresta(g, v1, v2, peso) == false){
+    if(grafo_insere_aresta(g, v1, v2, peso) == 0){
       printf("ERRO: ao inserir aresta, um vertice nao existe: %d -> %d\n", v1, v2);
       assert(0);
     }
@@ -177,27 +178,43 @@ void grafo_destroi(grafo_t* g)
   lista_t* adj; /* lista de adjacentes */
 
   l = g->vertices;
-  while(lista_vazia(l) == false){
+  while(lista_vazia(l) == 0){
     vertice_t* v = (vertice_t*)l->dado;
     adj = v->adjacentes;
-    while(lista_vazia(adj) == false){
+    while(lista_vazia(adj) == 0){
       aresta_t* a = (aresta_t*)adj->dado;
-      memo_libera(a);
+      free(a);
       /* próxima aresta */
       adj = adj->prox;
     }
     lista_destroi(v->adjacentes);
-    memo_libera(v);
+    free(v);
     /* próximo vértice */
     l = l->prox;
   }
   lista_destroi(g->vertices);
-  memo_libera(g);
+  free(g);
 }
 
 
 float grafo_caminho_curto(grafo_t* g, vertice_t* u, vertice_t* v)
 {
+#if 1
+  float custo = 0.0;
+  vertice_t* curr = NULL;
+  if(v->ant == NULL)
+    return 0.0;
+  
+  curr= v;
+  while(curr->ant != NULL){
+    custo += curr->chave;
+    curr = curr->ant;
+  }
+  if(curr->nome != u->nome)
+    return 0.0;
+
+  return custo;
+#else  
   if(u->nome == v->nome){
     printf("%d ", u->nome);
     return;
@@ -208,5 +225,6 @@ float grafo_caminho_curto(grafo_t* g, vertice_t* u, vertice_t* v)
     grafo_caminho_curto( g, u, v->ant );
     printf("%d(%.2f) ", v->nome, v->chave);
   }
+#endif
 }
 

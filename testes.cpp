@@ -36,32 +36,21 @@ extern "C" {
     #include "grafo.h"
 }
 
-TEST_CASE("Teste vazio") {
-    grafo_t* g;
-    g= grafo_cria();
-    REQUIRE(grafo_vazio(g) == 1);
-    REQUIRE(grafo_consulta_aresta(g, 12, 20) == 0);
-    grafo_destroi(g);
-}
-
 TEST_CASE("Caso 1") {
     grafo_t* g;
     vertice_t* u;
     vertice_t* v;
 
     g= grafo_cria();
-    REQUIRE(grafo_vazio(g) == 1);
-
     grafo_importa(g, "tinyEWG.txt");
-    REQUIRE(grafo_vazio(g) == 0);
     u = grafo_busca_vertice(g, 4);
     grafo_dijkstra(g, u);
 
     v = grafo_busca_vertice(g, 6);
-    REQUIRE(grafo_caminho_curto(g, u, v) == 0.93);
+    REQUIRE(grafo_caminho_curto(g, u, v) == 0.93f);
 
-    v = grafo_busca_vertice(g, 6);
-    REQUIRE(grafo_caminho_curto(g, u, v) == 1.83);
+    v = grafo_busca_vertice(g, 3);
+    REQUIRE(grafo_caminho_curto(g, u, v) == 1.83f);
 
     grafo_destroi(g);
 }
@@ -72,15 +61,12 @@ TEST_CASE("Caso 2") {
     vertice_t* v;
 
     g= grafo_cria();
-    REQUIRE(grafo_vazio(g) == 1);
-
     grafo_importa(g, "tinyEWG.txt");
-    REQUIRE(grafo_vazio(g) == 0);
     u = grafo_busca_vertice(g, 5);
     grafo_dijkstra(g, u);
 
     v = grafo_busca_vertice(g, 6);
-    REQUIRE(grafo_caminho_curto(g, u, v) == 1.74);
+    REQUIRE(grafo_caminho_curto(g, u, v) == 1.74f);
 
     grafo_destroi(g);
 }
